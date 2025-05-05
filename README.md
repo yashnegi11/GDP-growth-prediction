@@ -12,15 +12,15 @@ To develop a robust machine learning model that predicts the **annual GDP growth
 - Inflation (Consumer Price Index)
 - Unemployment Rate
 - Gross Capital Formation
-- Government Expenditure
-- Current Account Balance
+- Final consumption growth
+- Trade openness
 - Foreign Direct Investment (FDI)
-- Total Reserves
-- Broad Money (M2)
-- Export & Import of Goods and Services
+- Sector Growth
+- GDP Growth lag1
+- GDP Growth lag2
+- Export & Import growth
 - Others...
 
-This project also emphasizes **economic data preprocessing**, **visualizations**, and **interpretability** for policy analysis and forecasting.
 
 ---
 
@@ -38,8 +38,8 @@ By predicting GDP growth, we help stakeholders make informed decisions and reduc
 ## 📊 Dataset Description
 
 - **Source:** [World Bank Open Data (WDI)](https://databank.worldbank.org/source/world-development-indicators)
-- **Years Covered:** 2000 to 2022
-- **Countries:** 100+ countries globally
+- **Years Covered:** 1960 to 2023
+- **Countries:** 200+ countries globally
 - **Features:** 10+ macroeconomic indicators
 - **Target Variable:** `GDP Growth (annual %)` — indicator code `NY.GDP.MKTP.KD.ZG`
 
@@ -52,7 +52,6 @@ By predicting GDP growth, we help stakeholders make informed decisions and reduc
 - **NumPy** – Numerical operations
 - **Matplotlib / Seaborn** – Data visualization
 - **scikit-learn** – Machine Learning algorithms
-- **statsmodels** – Statistical modeling
 - **World Bank API (wbdata / pandas_datareader)** – Data fetching
 
 ---
@@ -64,8 +63,8 @@ By predicting GDP growth, we help stakeholders make informed decisions and reduc
 - Unified them into a single DataFrame indexed by `Country`, `Year`.
 
 ### 2. **Data Preprocessing**
-- Renamed confusing indicator codes to readable names.
-- Handled **missing data** via visual analysis, interpolation, and imputation.
+- Visualised and handled **missing data** via visual analysis and imputation.
+- Detected(using boxplot) and handled **outliers**(using IQR, capping).
 - Used forward-fill & backward-fill per country group.
 - Detected and removed **outliers**.
 
@@ -75,13 +74,13 @@ By predicting GDP growth, we help stakeholders make informed decisions and reduc
 - Identified important predictive patterns.
 
 ### 4. **Feature Engineering**
-- Checked multicollinearity.
-- Normalized or scaled features where required.
+- Create new features.
+- Normalized or scaled skewed features.
 - Selected most relevant features using correlation and domain logic.
 
 ### 5. **Modeling**
 - Applied baseline models: **Linear Regression**, **Ridge**, **Lasso**
-- Tried advanced methods: **Random Forest Regressor**, **Gradient Boosting**, etc.
+- Tried advanced methods: **Random Forest Regressor**, **Gradient Boosting**, **XGBoosting**.
 - Evaluated models with RMSE, MAE, and R² metrics.
 
 ### 6. **Prediction & Analysis**
@@ -93,10 +92,12 @@ By predicting GDP growth, we help stakeholders make informed decisions and reduc
 
 ## 🔍 Key Findings
 
-- GDP Growth is highly correlated with variables like **Capital Formation**, **Government Spending**, and **Inflation**.
-- Linear models worked well for stable economies, while ensemble methods captured complex behavior in volatile regions.
-- Data quality and availability vary drastically between countries; careful imputation was crucial.
-
+- Macroeconomic indicators can effectively predict GDP growth, especially with advanced ensemble models.
+- XGBoost outperformed all other models with an R² of 0.9581 on the test set, indicating strong predictive power.
+- Feature importance analysis revealed that factors like investment rate, exports, government spending, and inflation control had high predictive influence.
+- Regularized models (Ridge/Lasso) performed better than plain linear regression, but tree-based models captured non-linearity more effectively.
+- Regularized models (Ridge/Lasso) performed better than plain linear regression, but tree-based models captured non-linearity more effectively.
+  
 ---
 
 ## 📈 Future Improvements
@@ -128,6 +129,6 @@ Feel free to fork this repository, open issues, or contribute new features. Sugg
 
 ---
 
-**Repository by:** [Your GitHub Username]  
+**Repository by:** [yashnegi11]  
 **Project Title:** GDP Growth Prediction using ML  
-**License:** MIT (or any license you prefer)
+
