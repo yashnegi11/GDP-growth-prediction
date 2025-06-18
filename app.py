@@ -2,149 +2,192 @@ import streamlit as st
 import pandas as pd
 import joblib
 import plotly.express as px
+import math
+from pathlib import Path
 
-# Load data and model
-@st.cache_data
-def load_data():
-    return pd.read_csv("gdp_preprocessed.csv")
+st.set_page_config(page_title="🌍 GDP Dashboard", layout="wide")
 
-@st.cache_resource
-def load_model():
-    return joblib.load("models/gradient_boosting_model.pkl")
-
-@st.cache_data
-def load_feature_columns():
-    return joblib.load("models/feature_columns.pkl")
-
-df = load_data()
-model = load_model()
-feature_columns = load_feature_columns()
-
-st.title("🌍 GDP Growth Prediction Dashboard")
-
-# Preprocess data
-df.sort_values(['Country', 'Year'], inplace=True)
-df['Inflation YoY (%)'] = df.groupby('Country')['Inflation (CPI)'].pct_change() * 100
-latest_year = df['Year'].max()
-latest_data = df[df['Year'] == latest_year]
-
-# --- Country Selector ---
-st.subheader("🌐 Country Overview")
-country = st.selectbox("Select a country", sorted(df['Country'].unique()))
-year = st.slider("Select Year", int(df['Year'].min()), int(df['Year'].max()), int(latest_year))
-cols = [
-    'Agriculture Growth (%)', 'Industry Growth (%)', 'Services Growth (%)',
-    'Exports Growth (%)', 'Imports Growth (%)',
-    'Final Consumption Growth (%)', 'Gross Capital Formation Growth (%)',
-    'Inflation YoY (%)'
-]
-
-snapshot = df[(df['Country'] == country) & (df['Year'] == year)][cols].T
-snapshot.columns = ['Value']
-st.dataframe(snapshot.style.format("{:.2f}"))
-
-st.divider()
-
-# --- GDP vs Inflation Trend ---
-st.subheader(f"📉 GDP vs Inflation Trend - {country}")
-trend_df = df[df['Country'] == country]
-fig_trend = px.line(
-    trend_df,
-    x='Year',
-    y=['GDP Growth (%)', 'Inflation YoY (%)'],
-    labels={"value": "Percent (%)", "variable": "Indicator"},
-    title=f"GDP Growth vs Inflation YoY ({country})"
+page = st.sidebar.selectbox(
+    "📊 Select Dashboard",
+    ["📈 GDP Growth Prediction (ML)", "📉 Historical GDP Explorer"]
 )
-fig_trend.update_traces(mode='lines+markers')
-st.plotly_chart(fig_trend, use_container_width=True)
 
-st.divider()
+# -------------------- PAGE 1: ML Prediction Dashboard --------------------
+if page == "📈 GDP Growth Prediction (ML)":
 
-# --- Sector-wise Growth Over Time ---
-st.subheader(f"📈 Sector Growth Over Time - {country}")
-sector_cols = ['Agriculture Growth (%)', 'Industry Growth (%)', 'Services Growth (%)']
-fig_sector = px.line(
-    trend_df,
-    x='Year',
-    y=sector_cols,
-    title=f"Sector-wise GDP Growth ({country})",
-    labels={"value": "Growth (%)", "variable": "Sector"}
-)
-st.plotly_chart(fig_sector, use_container_width=True)
+    @st.cache_data
+    def load_data():
+        return pd.read_csv("data/gdp_preprocessed.csv")
 
-st.divider()
+    @st.cache_resource
+    def load_model():
+        return joblib.load("models/gradient_boosting_model.pkl")
 
-# --- Multi-country GDP and Inflation Comparison ---
-st.subheader("📊 Compare GDP Growth Across Countries")
-countries = st.multiselect("Select countries", sorted(df['Country'].unique()), default=[country])
+    @st.cache_data
+    def load_feature_columns():
+        return joblib.load("models/feature_columns.pkl")
 
-if countries:
-    compare_df = df[df['Country'].isin(countries)]
+    df = load_data()
+    model = load_model()
+    feature_columns = load_feature_columns()
 
-    fig = px.line(
-        compare_df,
-        x="Year",
-        y="GDP Growth (%)",
-        color="Country",
-        markers=True,
-        title="GDP Growth Comparison",
-        labels={"GDP Growth (%)": "GDP Growth (%)", "Year": "Year"},
+    st.title("📈 GDP Growth Prediction Dashboard")
+
+    df.sort_values(['Country', 'Year'], inplace=True)
+    df['Inflation YoY (%)'] = df.groupby('Country')['Inflation (CPI)'].pct_change() * 100
+    latest_year = df['Year'].max()
+    latest_data = df[df['Year'] == latest_year]
+
+    st.subheader("🌐 Country Overview")
+    country = st.selectbox("Select a country", sorted(df['Country'].unique()))
+    year = st.slider("Select Year", int(df['Year'].min()), int(df['Year'].max()), int(latest_year))
+    cols = [
+        'Agriculture Growth (%)', 'Industry Growth (%)', 'Services Growth (%)',
+        'Exports Growth (%)', 'Imports Growth (%)',
+        'Final Consumption Growth (%)', 'Gross Capital Formation Growth (%)',
+        'Inflation YoY (%)'
+    ]
+    snapshot = df[(df['Country'] == country) & (df['Year'] == year)][cols].T
+    snapshot.columns = ['Value']
+    st.dataframe(snapshot.style.format("{:.2f}"))
+
+    st.divider()
+
+    st.subheader(f"📉 GDP vs Inflation Trend - {country}")
+    trend_df = df[df['Country'] == country]
+    fig_trend = px.line(
+        trend_df,
+        x='Year',
+        y=['GDP Growth (%)', 'Inflation YoY (%)'],
+        labels={"value": "Percent (%)", "variable": "Indicator"},
+        title=f"GDP Growth vs Inflation YoY ({country})"
     )
-    fig.update_traces(mode='lines+markers', hovertemplate='Country: %{legendgroup}<br>Year: %{x}<br>GDP: %{y:.2f}%')
-    fig.update_layout(hovermode='x unified')
-    st.plotly_chart(fig, use_container_width=True)
+    fig_trend.update_traces(mode='lines+markers')
+    st.plotly_chart(fig_trend, use_container_width=True)
 
-    st.subheader("💹 Inflation Rate Comparison (YoY %)")
-    fig2 = px.line(
-        compare_df,
-        x="Year",
-        y="Inflation YoY (%)",
-        color="Country",
-        markers=True,
-        title="Inflation Rate Comparison (YoY %)",
-        labels={"Inflation YoY (%)": "Inflation Rate (%)", "Year": "Year"},
+    st.divider()
+
+    st.subheader(f"📈 Sector Growth Over Time - {country}")
+    sector_cols = ['Agriculture Growth (%)', 'Industry Growth (%)', 'Services Growth (%)']
+    fig_sector = px.line(
+        trend_df,
+        x='Year',
+        y=sector_cols,
+        title=f"Sector-wise GDP Growth ({country})",
+        labels={"value": "Growth (%)", "variable": "Sector"}
     )
-    fig2.update_traces(mode='lines+markers', hovertemplate='Country: %{legendgroup}<br>Year: %{x}<br>Inflation: %{y:.2f}%')
-    fig2.update_layout(hovermode='x unified')
-    st.plotly_chart(fig2, use_container_width=True)
+    st.plotly_chart(fig_sector, use_container_width=True)
 
-from datetime import datetime
+    st.divider()
 
-# Simulate forecast (replace with real model predictions if available)
-forecast_years = [2024, 2025, 2026]  # Change based on your dataset
-forecast_data = []
+    st.subheader("📊 Compare GDP Growth Across Countries")
+    countries = st.multiselect("Select countries", sorted(df['Country'].unique()), default=[country])
 
-for c in countries:
-    last_gdp = df[(df['Country'] == c) & (df['Year'] == df['Year'].max())]['GDP Growth (%)'].values[0]
-    # Dummy logic: slight growth or decline (replace with model)
-    for y in forecast_years:
-        forecast_value = last_gdp * (1 + 0.01 * (y - 2023))  # Simple projection
-        forecast_data.append({"Country": c, "Year": y, "GDP Growth (%)": forecast_value, "Data Type": "Forecast"})
+    if countries:
+        compare_df = df[df['Country'].isin(countries)]
 
-# Add actual data type to existing data
-actual_data = compare_df.copy()
-actual_data["Data Type"] = "Actual"
+        fig = px.line(
+            compare_df,
+            x="Year",
+            y="GDP Growth (%)",
+            color="Country",
+            markers=True,
+            title="GDP Growth Comparison",
+        )
+        fig.update_traces(mode='lines+markers')
+        fig.update_layout(hovermode='x unified')
+        st.plotly_chart(fig, use_container_width=True)
 
-# Combine actual + forecast
-forecast_df = pd.DataFrame(forecast_data)
-combined_df = pd.concat([actual_data, forecast_df])
+        st.subheader("💹 Inflation Rate Comparison (YoY %)")
+        fig2 = px.line(
+            compare_df,
+            x="Year",
+            y="Inflation YoY (%)",
+            color="Country",
+            markers=True,
+            title="Inflation Rate Comparison (YoY %)",
+        )
+        fig2.update_traces(mode='lines+markers')
+        fig2.update_layout(hovermode='x unified')
+        st.plotly_chart(fig2, use_container_width=True)
 
-# Plot with dashed lines for forecast
-fig = px.line(
-    combined_df,
-    x="Year",
-    y="GDP Growth (%)",
-    color="Country",
-    line_dash="Data Type",  # Solid vs Dash
-    markers=True,
-    title="GDP Growth Comparison (with Forecast)",
-    labels={"GDP Growth (%)": "GDP Growth (%)", "Year": "Year"},
-)
+# -------------------- PAGE 2: Historical GDP Explorer --------------------
+elif page == "📉 Historical GDP Explorer":
 
-fig.update_traces(
-    mode='lines+markers',
-    hovertemplate='Country: %{legendgroup}<br>Year: %{x}<br>GDP: %{y:.2f}%',
-)
-fig.update_layout(hovermode='x unified')
+    @st.cache_data
+    def get_gdp_data():
+        DATA_FILENAME = Path(__file__).parent / 'data/gdp_data.csv'
+        raw_gdp_df = pd.read_csv(DATA_FILENAME)
+        gdp_df = raw_gdp_df.melt(
+            ['Country Code'],
+            [str(x) for x in range(1960, 2024)],
+            'Year',
+            'GDP',
+        )
+        gdp_df['Year'] = pd.to_numeric(gdp_df['Year'])
+        return gdp_df
 
-st.plotly_chart(fig, use_container_width=True)
+    gdp_df = get_gdp_data()
+
+    st.title("📉 Historical GDP Explorer")
+
+    min_value = gdp_df['Year'].min()
+    max_value = gdp_df['Year'].max()
+
+    from_year, to_year = st.slider(
+        'Select time range',
+        min_value=min_value,
+        max_value=max_value,
+        value=[min_value, max_value]
+    )
+
+    countries = gdp_df['Country Code'].unique()
+
+    selected_countries = st.multiselect(
+        'Select countries to visualize',
+        countries,
+        ['IND', 'USA', 'CHN', 'PAK']
+    )
+
+    if not selected_countries:
+        st.warning("Please select at least one country.")
+    else:
+        filtered_gdp_df = gdp_df[
+            (gdp_df['Country Code'].isin(selected_countries))
+            & (gdp_df['Year'] >= from_year)
+            & (gdp_df['Year'] <= to_year)
+        ]
+
+        st.header('📈 GDP Over Time')
+        st.line_chart(
+            filtered_gdp_df,
+            x='Year',
+            y='GDP',
+            color='Country Code',
+        )
+
+        st.header(f'📊 GDP in {to_year}')
+        cols = st.columns(4)
+
+        first_year = gdp_df[gdp_df['Year'] == from_year]
+        last_year = gdp_df[gdp_df['Year'] == to_year]
+
+        for i, country in enumerate(selected_countries):
+            col = cols[i % len(cols)]
+            with col:
+                try:
+                    first_gdp = first_year[first_year['Country Code'] == country]['GDP'].iat[0] / 1e9
+                    last_gdp = last_year[last_year['Country Code'] == country]['GDP'].iat[0] / 1e9
+                    growth = f'{last_gdp / first_gdp:,.2f}x'
+                    delta_color = 'normal'
+                except:
+                    last_gdp = 0
+                    growth = 'n/a'
+                    delta_color = 'off'
+
+                st.metric(
+                    label=f'{country} GDP',
+                    value=f'{last_gdp:,.0f}B',
+                    delta=growth,
+                    delta_color=delta_color
+                )
