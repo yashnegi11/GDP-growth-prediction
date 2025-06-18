@@ -1,134 +1,142 @@
+# 🌍 GDP Growth Prediction Dashboard using Machine Learning
 
-# 🌍 GDP Growth Prediction using Machine Learning
-
-This project explores the use of **machine learning models** to predict **GDP growth rates** of countries using a range of **macroeconomic indicators**. By leveraging historical data from the **World Bank's World Development Indicators (WDI)**, the aim is to build a predictive system that can offer insights into how economic factors correlate and influence a nation's economic growth.
+This project uses **machine learning** to predict the **GDP growth rate** of countries based on various **macroeconomic indicators**. Leveraging historical data from the **World Bank's World Development Indicators (WDI)**, we built both a **predictive model** and an **interactive Streamlit dashboard** to visualize trends and forecast economic performance.
 
 ---
 
 ## 📌 Project Objective
 
-To develop a robust machine learning model that predicts the **annual GDP growth (%)** of countries using features such as:
+Build a robust system that:
+- Predicts **annual GDP growth (%)** using key macroeconomic indicators.
+- Offers **interactive visualization** and **country comparison** through a web dashboard.
 
-- Inflation (Consumer Price Index)
-- Unemployment Rate
+---
+
+## 🔧 Key Features of the Dashboard
+
+- 📉 Visualize **GDP vs Inflation trends** over time for each country.
+- 🌐 Compare **GDP growth and inflation rates** across multiple countries.
+- 📈 View **sector-wise growth trends** (Agriculture, Industry, Services).
+- 🧮 **Predict GDP growth** based on custom macroeconomic inputs.
+- 🚨 Highlight potential risks like high inflation or low GDP growth.
+
+---
+
+## 🎯 Indicators Used for Prediction
+
+- Inflation (CPI)
+- Final Consumption Growth
 - Gross Capital Formation
-- Final consumption growth
-- Trade openness
-- Foreign Direct Investment (FDI)
-- Sector Growth
-- GDP Growth lag1
-- GDP Growth lag2
-- Export & Import growth
+- Exports & Imports Growth
+- Agriculture, Industry, Services Growth
+- GDP Lag (1-year, 2-year)
+- Trade Openness
+- FDI (Foreign Direct Investment)
 - Others...
-
 
 ---
 
 ## 🧠 Why This Project Matters
 
-Understanding GDP growth is crucial for:
-- Governments to design effective fiscal and monetary policies
-- Investors to assess economic health and market potential
-- Researchers to study long-term economic trends
+Understanding and forecasting GDP growth is crucial for:
+- Policymaking by governments
+- Investment decisions by businesses
+- Long-term planning by international agencies
 
-By predicting GDP growth, we help stakeholders make informed decisions and reduce uncertainty.
-
----
-
-## 📊 Dataset Description
-
-- **Source:** [World Bank Open Data (WDI)](https://databank.worldbank.org/source/world-development-indicators)
-- **Years Covered:** 1960 to 2023
-- **Countries:** 200+ countries globally
-- **Features:** 10+ macroeconomic indicators
-- **Target Variable:** `GDP Growth (annual %)` — indicator code `NY.GDP.MKTP.KD.ZG`
+Our model brings **data science** and **economics** together to reduce uncertainty and assist in **evidence-based decision making**.
 
 ---
 
-## ⚙️ Technologies Used
+## 📊 Dataset Details
+
+- **Source:** [World Bank - WDI](https://databank.worldbank.org/source/world-development-indicators)
+- **Years:** 1960–2023
+- **Countries:** 200+ countries
+- **Target:** `GDP Growth (%)` (NY.GDP.MKTP.KD.ZG)
+
+---
+
+## ⚙️ Technologies & Tools
 
 - **Python**
-- **Pandas** – Data manipulation
-- **NumPy** – Numerical operations
-- **Matplotlib / Seaborn** – Data visualization
-- **scikit-learn** – Machine Learning algorithms
-- **World Bank API (wbdata / pandas_datareader)** – Data fetching
+- **Streamlit** – Dashboard
+- **Pandas / NumPy** – Data handling
+- **Plotly** – Interactive charts
+- **scikit-learn** – Model building
+- **Google Colab** – Model training
+- **Joblib** – Model serialization
 
 ---
 
-## 🛠️ Workflow
+## 🛠️ ML Workflow
 
-### 1. **Data Collection**
-- Collected indicators from World Bank via API.
-- Unified them into a single DataFrame indexed by `Country`, `Year`.
-
-### 2. **Data Preprocessing**
-- Visualised and handled **missing data** via visual analysis and imputation.
-- Detected(using boxplot) and handled **outliers**(using IQR, capping).
-- Used forward-fill & backward-fill per country group.
-- Detected and removed **outliers**.
-
-### 3. **Exploratory Data Analysis**
-- Visualized trends per country (e.g., India, USA, China).
-- Examined correlation heatmaps between features and target.
-- Identified important predictive patterns.
-
-### 4. **Feature Engineering**
-- Create new features.
-- Normalized or scaled skewed features.
-- Selected most relevant features using correlation and domain logic.
-
-### 5. **Modeling**
-- Applied baseline models: **Linear Regression**, **Ridge**, **Lasso**
-- Tried advanced methods: **Random Forest Regressor**, **Gradient Boosting**, **XGBoosting**.
-- Evaluated models with RMSE, MAE, and R² metrics.
-
-### 6. **Prediction & Analysis**
-- Visualized predictions vs. actual values.
-- Compared performance across models and countries.
-- Discussed economic interpretation of model results.
+1. **Data Collection** – World Bank API → CSV  
+2. **Preprocessing** – Imputation, scaling, outlier handling  
+3. **Feature Engineering** – Lag features, sector ratios  
+4. **Modeling** – Linear Regression, Random Forest, Gradient Boosting, XGBoost  
+5. **Evaluation** – RMSE, R², MAE  
+6. **Deployment** – Streamlit dashboard for real-time prediction  
 
 ---
 
-## 🔍 Key Findings
+## 🧪 Key Results
 
-- Macroeconomic indicators can effectively predict GDP growth, especially with advanced ensemble models.
-- XGBoost outperformed all other models with an R² of 0.9581 on the test set, indicating strong predictive power.
-- Feature importance analysis revealed that factors like investment rate, exports, government spending, and inflation control had high predictive influence.
-- Regularized models (Ridge/Lasso) performed better than plain linear regression, but tree-based models captured non-linearity more effectively.
-- Regularized models (Ridge/Lasso) performed better than plain linear regression, but tree-based models captured non-linearity more effectively.
-  
+- 📊 **XGBoost** achieved highest performance with **R² ≈ 0.95**  
+- 🌟 Top predictors: investment, inflation, exports, sectoral growth  
+- 🚀 Ensemble methods (RF, XGB) outperformed linear models  
+- ✅ Final model: **Gradient Boosting Regressor**
+
+---
+
+## 🌐 Live Demo
+
+- 🔗 **Streamlit App:** [Open Dashboard](https://your-streamlit-link)
+- 🎥 **Demo Video:** [Watch on Google Drive](https://your-video-link)
+
+---
+
+## 🗂️ Project Structure
+
+GDP-growth-prediction/
+│
+├── app.py # Streamlit dashboard app
+├── models/ # Trained model (.pkl) and feature columns
+├── data/ # Preprocessed CSV data
+├── notebooks/ # Colab notebook for training
+├── requirements.txt # Python dependencies
+├── README.md # This file
+
+
 ---
 
 ## 📈 Future Improvements
 
-- Incorporate **non-linear models** like XGBoost, CatBoost.
-- Explore **Time Series Forecasting** using LSTM or ARIMA.
-- Introduce **categorical features** like income group or region.
-- Develop an **interactive dashboard** to visualize trends dynamically.
+- Add **forecasting** features (show dotted lines for 2024–2026)
+- Integrate **LSTM or ARIMA** for time-series prediction
+- Add **region-based filtering** (e.g., South Asia, EU)
+- Enable **data upload** for user-specific projections
 
 ---
 
 ## 🙌 Acknowledgements
 
-- **World Bank** for providing open-access economic indicators.
-- The **scikit-learn**, **statsmodels**, and **Seaborn** communities for excellent tools.
-- Various research papers and documentation on economic modeling and forecasting.
+- World Bank Open Data API  
+- scikit-learn and Streamlit teams  
+- Community research on GDP forecasting  
 
 ---
 
 ## 💡 About Me
 
-This project is a part of my journey to become a **Machine Learning Engineer**, with a special focus on understanding **economics through data**. I am passionate about combining **data science** with **real-world problems** to build practical and impactful solutions.
+I'm on a mission to become a **Machine Learning Engineer** by solving real-world challenges using data. This project is part of my journey to apply AI in **economic analysis and policy forecasting**.
 
 ---
 
-## 📬 Feedback & Contributions
+## 💬 Feedback & Contributions
 
-Feel free to fork this repository, open issues, or contribute new features. Suggestions to improve model performance, add new economic indicators, or build visual dashboards are most welcome!
+Feel free to ⭐ star, fork, or contribute to this repo. Suggestions for improvement and PRs are highly appreciated!
 
 ---
 
-**Repository by:** yashnegi11 
-**Project Title:** GDP Growth Prediction using ML  
-
+**Author:** [@yashnegi11](https://github.com/yashnegi11)  
+**Repo:** [GDP-growth-prediction](https://github.com/yashnegi11/GDP-growth-prediction)
