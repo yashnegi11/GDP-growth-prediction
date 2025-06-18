@@ -91,7 +91,6 @@ Our model brings **data science** and **economics** together to reduce uncertain
 ## 🌐 Live Demo
 
 - 🔗 **Streamlit App:** [Open Dashboard](https://your-streamlit-link)
-- 🎥 **Demo Video:** [Watch on Google Drive](https://your-video-link)
 
 ---
 
