@@ -90,7 +90,7 @@ Our model brings **data science** and **economics** together to reduce uncertain
 
 ## 🌐 Live Demo
 
-- 🔗 **Streamlit App:** [Open Dashboard](https://your-streamlit-link)
+- 🔗 **Streamlit App:** [Open Dashboard]([https://your-streamlit-link](https://gdp-growth-prediction-6krnqus8qvujykbiebatrj.streamlit.app/))
 
 ---
 
