@@ -95,7 +95,7 @@ Our model brings **data science** and **economics** together to reduce uncertain
 ---
 
 ## 🗂️ Project Structure
-
+```
 GDP-growth-prediction/
 │
 ├── app.py # Streamlit dashboard app
@@ -104,7 +104,7 @@ GDP-growth-prediction/
 ├── notebooks/ # Colab notebook for training
 ├── requirements.txt # Python dependencies
 ├── README.md # This file
-
+```
 
 ---
 
